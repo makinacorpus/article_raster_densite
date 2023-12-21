@@ -26,4 +26,4 @@ docker-compose exec postgres psql -U postgres -f /scripts/<fichier.sql>
 
 Suivez le paramètrage de la capture d'écran suivate :
 
-![pictures/qgis.png](Illustration des paramètres de connexion)
+![Illustration des paramètres de connexion](./pictures/qgis.png)
