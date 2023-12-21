@@ -1,0 +1,32 @@
+---
+version: "3.7"
+
+volumes:
+  pgdata:
+
+
+x-common-environment: &common-environment
+  TZ: "Europe/Paris"
+  DATABASE_URL: postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@/$POSTGRES_DB?host=/var/run/postgresql
+  POSTGRES_DB: $POSTGRES_DB
+  POSTGRES_USER: $POSTGRES_USER
+  POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+  POSTGRES_HOST: "/var/run/postgresql"
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./scripts:/scripts/
+    restart: always
+    ports:
+      - 127.0.0.1:9950:5432
+    environment:
+      <<: *common-environment
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+    command: "postgres -c work_mem=1GB -c shared_buffers=1GB -c max_worker_processes=4 -c max_parallel_workers=4 -c min_wal_size=80MB -c max_wal_size=1GB -c checkpoint_timeout=300 -c checkpoint_completion_target=0.9"
